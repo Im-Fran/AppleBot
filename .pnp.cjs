@@ -33,6 +33,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@discordjs/rest", "npm:1.1.0"],\
             ["bufferutil", "npm:4.0.6"],\
             ["discord.js", "npm:14.3.0"],\
             ["dotenv", "npm:16.0.2"],\
@@ -183,6 +184,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["AppleConfigWatcher", "workspace:."],\
+            ["@discordjs/rest", "npm:1.1.0"],\
             ["bufferutil", "npm:4.0.6"],\
             ["discord.js", "npm:14.3.0"],\
             ["dotenv", "npm:16.0.2"],\

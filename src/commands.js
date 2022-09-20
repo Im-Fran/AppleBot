@@ -1,11 +1,15 @@
 const { Routes } = require('discord.js');
+const fs = require('fs');
 
-const commands = [
-    {
-        name:  'ping',
-        description:  'Replies with Pong!',
+const commands = [];
+
+fs.readdirSync('./src/commands').filter(it => it.endsWith('.js')).forEach((file) => {
+    const nameWithoutExtension = file.substring(0, file.length - 3);
+    const command = require(`./commands/${nameWithoutExtension}`);
+    if(command.name && command.description && typeof command.onExecute === 'function') {
+        commands.push(command);
     }
-];
+});
 
 const init = (rest) => {
     (async () => {
@@ -13,6 +17,9 @@ const init = (rest) => {
             console.log('Started refreshing application (/) commands.');
 
             await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commands });
+            commands.forEach(it => {
+                console.log('Registered command: /' + it.name);
+            })
 
             console.log('Successfully reloaded application (/) commands.');
         } catch (error) {
@@ -23,4 +30,5 @@ const init = (rest) => {
 
 module.exports = {
     initCommands: init,
+    getCommandMeta: (name) => commands.find(it => it.name === name)
 }
