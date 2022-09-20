@@ -1,0 +1,14 @@
+{
+  "name": "AppleConfigWatcher",
+  "packageManager": "yarn@3.2.2",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "bufferutil": "^4.0.6",
+    "discord.js": "^14.3.0",
+    "dotenv": "^16.0.2",
+    "utf-8-validate": "^5.0.9",
+    "zlib-sync": "^0.1.7"
+  }
+}
