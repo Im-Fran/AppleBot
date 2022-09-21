@@ -1,4 +1,6 @@
 require('./env'); // Load the .env file
+const { initUpdateChecker } = require('./apple');
+initUpdateChecker(); // Start the apple update checker
 
 const { initCommands, getCommandMeta } = require('./commands'); // Get command methods
 const { REST } = require('@discordjs/rest'); // Discord REST API

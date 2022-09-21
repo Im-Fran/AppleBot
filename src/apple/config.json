@@ -1,0 +1,100 @@
+{
+  "audiences": {
+    "macos_release": "60b55e25-a8ed-4f45-826c-c1495a4ccc65",
+    "macos_11_beta": "ca60afc6-5954-46fd-8cb9-60dde6ac39fd",
+    "macos_12_beta": "298e518d-b45e-4d36-94be-34a63d6777ec",
+    "macos_13_beta": "683e9586-8a82-4e5f-b0e7-767541864b8b",
+
+    "display_release": "60b55e25-a8ed-4f45-826c-c1495a4ccc65",
+    "display_15_beta": "298e518d-b45e-4d36-94be-34a63d6777ec",
+    "display_16_beta": "683e9586-8a82-4e5f-b0e7-767541864b8b",
+
+    "ios_release": "01c1d682-6e8f-4908-b724-5501fe3f5e5c",
+    "ios_14_security": "c724cb61-e974-42d3-a911-ffd4dce11eda",
+    "ios_15_beta": "ce48f60c-f590-4157-a96f-41179ca08278",
+    "ios_16_beta": "a6050bca-50d8-4e45-adc2-f7333396a42c",
+
+    "watchos_release": "b82fcf9c-c284-41c9-8eb2-e69bf5a5269f",
+    "watchos_8_beta": "b407c130-d8af-42fc-ad7a-171efea5a3d0",
+    "watchos_9_beta": "341f2a17-0024-46cd-968d-b4444ec3699f",
+
+    "tvos_release": "356d9da0-eee4-4c6c-bbe5-99b60eadddf0",
+    "tvos_15_beta": "4d0dcdf7-12f2-4ebf-9672-ac4a4459a8bc",
+    "tvos_16_beta": "d6bac98b-9e2a-4f87-9aba-22c898b25d84",
+
+    "audioos_release": "0322d49d-d558-4ddf-bdff-c0443d0e6fac",
+    "audioos_15_beta": "58ff8d56-1d77-4473-ba88-ee1690475e40",
+    "audioos_16_beta": "59377047-7b3f-45b9-8e99-294c0daf3c85"
+  },
+  "devices": {
+    "ios": {
+      "version": "15.4",
+      "build": "19E241",
+      "prodtype": "iPhone13,4",
+      "model": "D54pAP",
+      "name": "iPhone",
+      "update_asset_type": "com.apple.MobileAsset.SoftwareUpdate",
+      "doc_asset_type": "com.apple.MobileAsset.SoftwareUpdateDocumentation"
+    },
+
+    "ipados": {
+      "version": "15.4",
+      "build": "19E241",
+      "prodtype": "iPad13,6",
+      "model": "J518AP",
+      "name": "iPad",
+      "update_asset_type": "com.apple.MobileAsset.SoftwareUpdate",
+      "doc_asset_type": "com.apple.MobileAsset.SoftwareUpdateDocumentation"
+    },
+
+    "watchos": {
+      "version": "8.5",
+      "build": "19T242",
+      "prodtype": "Watch6,4",
+      "model": "N158bAP",
+      "name": "Watch",
+      "update_asset_type": "com.apple.MobileAsset.SoftwareUpdate",
+      "doc_asset_type": "com.apple.MobileAsset.WatchSoftwareUpdateDocumentation"
+    },
+
+    "audioos": {
+      "version": "15.4",
+      "build": "19L440",
+      "prodtype": "AudioAccessory5,1",
+      "model": "B520AP",
+      "name": "AudioAccessory",
+      "update_asset_type": "com.apple.MobileAsset.SoftwareUpdate",
+      "doc_asset_type": "com.apple.MobileAsset.SoftwareUpdateDocumentation"
+    },
+
+    "tvos": {
+      "version": "15.4",
+      "build": "19L440",
+      "prodtype": "AppleTV11,1",
+      "model": "J305AP",
+      "name": "AppleTV",
+      "update_asset_type": "com.apple.MobileAsset.SoftwareUpdate",
+      "doc_asset_type": "com.apple.MobileAsset.SoftwareUpdateDocumentation"
+    },
+
+    "macos": {
+      "version": "11.5",
+      "build": "20G71",
+      "prodtype": "MacBookPro17,1",
+      "model": "J293AP",
+      "name": "Mac",
+      "update_asset_type": "com.apple.MobileAsset.MacSoftwareUpdate",
+      "doc_asset_type": "com.apple.MobileAsset.MacSoftwareUpdateDocumentation"
+    },
+
+    "display": {
+      "version": "15.4",
+      "build": "19E241",
+      "prodtype": "AppleDisplay2,1",
+      "model": "J327AP",
+      "name": "Display",
+      "update_asset_type": "com.apple.MobileAsset.MacSoftwareUpdate",
+      "doc_asset_type": "com.apple.MobileAsset.MacSoftwareUpdateDocumentation"
+    }
+  }
+}

@@ -337,3 +337,6 @@ $RECYCLE.BIN/
 !.yarn/versions
 !yarn.lock
 !.yarnrc.yml
+
+### custom ###
+.cache.json
