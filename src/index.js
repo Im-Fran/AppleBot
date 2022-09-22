@@ -2,10 +2,17 @@ require('./env'); // Load the .env file
 const fs = require('fs');
 global.srcDir = __dirname;
 global.rootDir = fs.realpathSync(__dirname + '/../') + '/';
+global.cacheDir = rootDir + 'cache/';
 global.cacheFile =  rootDir + 'cache.json';
-if(!fs.existsSync(cacheFile)){
-    fs.writeFileSync(cacheFile, '{}');
-}
+global.updatesCacheFile = `${cacheDir}/updates.json`;
+global.notificationChannelsCache = `${cacheDir}/notification_channels.json`;
+
+[cacheFile, updatesCacheFile, notificationChannelsCache].forEach(it => {
+    if(!fs.existsSync(it)){
+        fs.writeFileSync(it, '');
+    }
+})
+
 console.log('Cache file: ' + cacheFile);
 const { lang } = require('./i18n');
 const { initUpdateChecker } = require('./apple');

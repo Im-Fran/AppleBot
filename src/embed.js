@@ -27,11 +27,13 @@ module.exports = {
         const httpsAgent = new https.Agent({
             rejectUnauthorized: false
         });
-        if((await axios.get(thumbnailLink, {
-            httpsAgent,
-        })).status === 200){
-            embed.setThumbnail(thumbnailLink);
-        }
+        try {
+            if((await axios.get(thumbnailLink, {
+                httpsAgent,
+            })).status === 200){
+                embed.setThumbnail(thumbnailLink);
+            }
+        }catch (_) {}
         embed.setTimestamp();
         return embed;
     }

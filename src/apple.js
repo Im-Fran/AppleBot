@@ -2,9 +2,6 @@ const { post } = require('./embed');
 const rest = require('./apple/rest');
 const config = require('./apple/config.json')
 const fs = require('fs');
-let cache = {};
-const content = fs.readFileSync(cacheFile, 'utf-8')
-cache = content.length === 0 ? {} : JSON.parse(content);
 
 /**
  * Gets an Apple update
@@ -30,9 +27,8 @@ const getUpdate = async (audience, os, isBeta) => {
 }
 
 const postUpdateNotification = async (update, os) => {
-    // Update cache
-    const content = fs.readFileSync(cacheFile, 'utf-8')
-    cache = content.length === 0 ? {} : JSON.parse(content);
+    const content = fs.readFileSync(notificationChannelsCache, 'utf-8')
+    const cache = content.length === 0 ? {} : JSON.parse(content);
     Object.keys(cache.update_channels || {}).forEach(guildId => {
         const channel = client.channels.cache.get(cache.update_channels[guildId]);
         if(channel){
@@ -45,9 +41,9 @@ const postUpdateNotification = async (update, os) => {
 }
 
 const checkUpdates = async () => {
-    const content = fs.readFileSync(cacheFile, 'utf-8')
-    cache = content.length === 0 ? {} : JSON.parse(content);
-    if(!cache.updateChecks){
+    const content = fs.readFileSync(updatesCacheFile, 'utf-8')
+    const cache = content.length === 0 ? {} : JSON.parse(content);
+    if(cache.updateChecks == null){
         cache.updateChecks = {};
     }
     const now = new Date();
@@ -65,7 +61,7 @@ const checkUpdates = async () => {
             const update = await getUpdate(audience, display, audience.toLowerCase().includes('beta')); // Get the update
             if(update){
                 const encoded = Buffer.from(JSON.stringify(update)).toString('base64')
-                if(!cache.updateChecks[audience]){ // If the update wasn't already sent
+                if(cache.updateChecks[audience] !== encoded){ // If the update wasn't already sent
                     await postUpdateNotification(update, display);
                     cache.updateChecks[audience] = encoded;
                 }
@@ -75,7 +71,7 @@ const checkUpdates = async () => {
 
     // Update last check
     cache.lastCheck = now;
-    fs.writeFileSync(cacheFile, JSON.stringify(cache));
+    fs.writeFileSync(updatesCacheFile, JSON.stringify(cache), 'utf-8');
 }
 const initUpdateChecker = () => {
     checkUpdates().then(() => {

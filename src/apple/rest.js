@@ -15,71 +15,83 @@ const { v4 } = require('uuid');
  */
 const request_changelog = async (audience, model, documentationId, id) => {
     const uuid = v4();
-    const postData = {
-        AssetAudience: config.audiences[audience] || audience,
-        HWModelStr: model,
-        SUDocumentationID: documentationId,
-        CertIssuanceDay: "2019-09-06",
-        ClientVersion: 2,
-        DeviceName: config.devices[id.toLowerCase()].name,
-        AssetType: config.devices[id.toLowerCase()].doc_asset_type,
-    };
-    console.log(`${uuid} > CHANGELOG: https://gdmf.apple.com/v2/assets POST: ${JSON.stringify(postData)}`)
-    const agent = new https.Agent({
-        rejectUnauthorized: false,
-    })
-    const res = await axios.post('https://gdmf.apple.com/v2/assets', postData, {
-        httpsAgent: agent
-    }).catch(err => {
-        console.log(`${uuid} >  Failed to fetch ${id} Changelog: ${err}`)
+    try {
+        const postData = {
+            AssetAudience: config.audiences[audience] || audience,
+            HWModelStr: model,
+            SUDocumentationID: documentationId,
+            CertIssuanceDay: "2019-09-06",
+            ClientVersion: 2,
+            DeviceName: config.devices[id.toLowerCase()].name,
+            AssetType: config.devices[id.toLowerCase()].doc_asset_type,
+        };
+        const agent = new https.Agent({
+            rejectUnauthorized: false,
+        })
+        const res = await axios.post('https://gdmf.apple.com/v2/assets', postData, {
+            httpsAgent: agent
+        }).catch(err => {
+            console.log(`${uuid} > CHANGELOG: https://gdmf.apple.com/v2/assets POST: ${JSON.stringify(postData)}`)
+            console.log(`${uuid} >  Failed to fetch ${id} Changelog: ${err}`)
+            console.log({
+                uuid,
+                method: `request_changelog(${id})`,
+                audience,
+                model,
+                documentationId,
+                id
+            })
+        })
+
+        if(!res) return null;
+        let data = res.data.split('.')[1]
+        let buff = new Buffer.from(data, 'base64');
+        let json = JSON.parse(buff.toString('utf-8'))
+
+        if(!json.Assets[0])
+            return '--';
+        const url = `${json.Assets[0].__BaseURL}${json.Assets[0].__RelativePath}`
+        const changelog = await axios.request({
+            method: 'GET',
+            url: url,
+            responseType: 'arraybuffer',
+            responseEncoding: null,
+        }).catch(err => {
+            console.log(`Failed to fetch ${id} Changelog: ${err}`)
+            console.log({
+                method: `request_changelog(${id})`,
+                audience,
+                model,
+                documentationId,
+                id
+            })
+        });
+        if(!changelog) {
+            return '--';
+        }
+        const zip = new admzip(changelog.data);
+        let changelogText = zip.getEntries().map(entry => entry.entryName === 'AssetData/en.lproj/ReadMeSummary.html' ? entry : null).filter(it => !!it)[0];
+        const sanitized = sanitizeHTML(changelogText.getData().toString('utf8'), {
+            allowedTags: ['li'],
+        }).split('\r\n').map(it => {
+            return it.replace(/\t/g, '')
+                .replace(/<li>/g, '')
+                .replace(/<[^>]+>/g, '')
+                .replace(/&amp;/g, '&')
+                .trimStart()
+        }).join('\n').replace(/\n\s*\n\s*\n/g, '\n\n')
+        return sanitized.length > 4000 ? sanitized.substring(0, 3900) + `...\n` : sanitized;
+    }catch (e) {
+        console.log(`${uuid} > Failed to fetch ${id} Changelog: ${e}`)
         console.log({
-            uuid,
             method: `request_changelog(${id})`,
             audience,
             model,
             documentationId,
             id
         })
-    })
-
-    if(!res) return null;
-    let data = res.data.split('.')[1]
-    let buff = new Buffer.from(data, 'base64');
-    let json = JSON.parse(buff.toString('utf-8'))
-
-    if(!json.Assets[0])
-        return '--';
-    const url = `${json.Assets[0].__BaseURL}${json.Assets[0].__RelativePath}`
-    const changelog = await axios.request({
-        method: 'GET',
-        url: url,
-        responseType: 'arraybuffer',
-        responseEncoding: null,
-    }).catch(err => {
-        console.log(`Failed to fetch ${id} Changelog: ${err}`)
-        console.log({
-            method: `request_changelog(${id})`,
-            audience,
-            model,
-            documentationId,
-            id
-        })
-    });
-    if(!changelog) {
-        return '--';
+        return null;
     }
-    const zip = new admzip(changelog.data);
-    let changelogText = zip.getEntries().map(entry => entry.entryName === 'AssetData/en.lproj/ReadMeSummary.html' ? entry : null).filter(it => !!it)[0];
-    const sanitized = sanitizeHTML(changelogText.getData().toString('utf8'), {
-        allowedTags: ['li'],
-    }).split('\r\n').map(it => {
-        return it.replace(/\t/g, '')
-            .replace(/<li>/g, '')
-            .replace(/<[^>]+>/g, '')
-            .replace(/&amp;/g, '&')
-            .trimStart()
-    }).join('\n').replace(/\n\s*\n\s*\n/g, '\n\n')
-    return sanitized.length > 4000 ? sanitized.substring(0, 3900) + `...\n` : sanitized;
 };
 
 /**
@@ -95,22 +107,69 @@ const request_changelog = async (audience, model, documentationId, id) => {
  */
 const request_update = async (audience, build, model, productType, productVersion, isBeta, id) => {
     const uuid = v4();
-    const postData = {
-        AssetAudience: config.audiences[audience] || audience,
-        CertIssuanceDay: "2020-09-29",
-        ClientVersion: 2,
-        AssetType: id.toLowerCase() === 'macos' ? 'com.apple.MobileAsset.MacSoftwareUpdate' : "com.apple.MobileAsset.SoftwareUpdate",
-        BuildVersion: config.devices[id.toLowerCase()].build,
-        HWModelStr: config.devices[id.toLowerCase()].model,
-        ProductType: config.devices[id.toLowerCase()].prodtype,
-        ProductVersion: config.devices[id.toLowerCase()].version,
-    };
-    console.log(`${uuid} > UPDATE: https://gdmf.apple.com/v2/assets POST: ${JSON.stringify(postData)}`)
-    const agent = new https.Agent({
-        rejectUnauthorized: false,
-    })
-    let res = await axios.post('https://gdmf.apple.com/v2/assets', postData, { httpsAgent: agent }).catch(error => {
-        console.log(`${uuid} > Failed to fetch ${id} Update: ${error}`)
+    try {
+        const postData = {
+            AssetAudience: config.audiences[audience] || audience,
+            CertIssuanceDay: "2020-09-29",
+            ClientVersion: 2,
+            AssetType: id.toLowerCase() === 'macos' ? 'com.apple.MobileAsset.MacSoftwareUpdate' : "com.apple.MobileAsset.SoftwareUpdate",
+            BuildVersion: config.devices[id.toLowerCase()].build,
+            HWModelStr: config.devices[id.toLowerCase()].model,
+            ProductType: config.devices[id.toLowerCase()].prodtype,
+            ProductVersion: config.devices[id.toLowerCase()].version,
+        };
+        const agent = new https.Agent({
+            rejectUnauthorized: false,
+        })
+        let res = await axios.post('https://gdmf.apple.com/v2/assets', postData, { httpsAgent: agent }).catch(error => {
+            console.log(`${uuid} > UPDATE: https://gdmf.apple.com/v2/assets POST: ${JSON.stringify(postData)}`)
+            console.log(`${uuid} > Failed to fetch ${id} Update: ${error}`)
+            console.log({
+                uuid,
+                method: `request_update(${id})`,
+                audience,
+                build,
+                model,
+                productType,
+                productVersion,
+                isBeta,
+                id
+            })
+        })
+
+
+        if(!res) return null;
+
+        let data = res.data.split('.')[1]
+        let buff = new Buffer.from(data, 'base64');
+        let json = JSON.parse(buff.toString('utf-8'))
+
+        if(json.Assets[0]){
+            let changelog = '--';
+            if(!isBeta && id.toLowerCase() !== 'tvos'){
+                changelog = await request_changelog(
+                    audience,
+                    model,
+                    json.Assets[0].SUDocumentationID,
+                    id,
+                )
+                if(changelog == null)
+                    changelog = '--';
+            }
+            return {
+                os_version: json.Assets[0].OSVersion.replace('9.9.', ''),
+                os_build: json.Assets[0].Build,
+                os_size: json.Assets[0]._DownloadSize,
+                os_updateid: json.Assets[0].SUDocumentationID,
+                os_changelog: changelog,
+                os_postdate: json.PostingDate,
+                os_download: json.Assets[0].__BaseURL + json.Assets[0].__RelativePath
+            };
+        } else {
+            return null
+        }
+    }catch (e) {
+        console.log(`${uuid} > Failed to fetch ${id} Update: ${e}`)
         console.log({
             uuid,
             method: `request_update(${id})`,
@@ -122,39 +181,7 @@ const request_update = async (audience, build, model, productType, productVersio
             isBeta,
             id
         })
-    })
-
-
-    if(!res) return null;
-
-    let data = res.data.split('.')[1]
-    let buff = new Buffer.from(data, 'base64');
-    let json = JSON.parse(buff.toString('utf-8'))
-
-    if(json.Assets[0]){
-        let changelog = '--';
-        if(!isBeta && id.toLowerCase() !== 'tvos'){
-            changelog = await request_changelog(
-                audience,
-                model,
-                json.Assets[0].SUDocumentationID,
-                id,
-            )
-            if(changelog == null)
-                changelog = '--';
-        }
-        return {
-            os_version: json.Assets[0].OSVersion.replace('9.9.', ''),
-            os_build: json.Assets[0].Build,
-            os_size: json.Assets[0]._DownloadSize,
-            os_updateid: json.Assets[0].SUDocumentationID,
-            os_changelog: changelog,
-            os_postdate: json.PostingDate,
-            os_download: json.Assets[0].__BaseURL + json.Assets[0].__RelativePath
-        };
-    } else {
-        console.log('No update asset found.')
-        return null
+        return null;
     }
 }
 

@@ -15,11 +15,12 @@ data.onExecute = async (interaction) => {
     await interaction.deferReply();
     const channel = interaction.options.getChannel('channel');
     const guildId = interaction.guildId;
-    const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+    const content = fs.readFileSync(notificationChannelsCache, 'utf-8');
+    const cache = content.length === 0 ? {} : JSON.parse(content);
     const update_channels = cache.update_channels || {};
     update_channels[guildId] = channel.id;
     cache.update_channels = update_channels;
-    fs.writeFileSync(cacheFile, JSON.stringify(cache));
+    fs.writeFileSync(notificationChannelsCache, JSON.stringify(cache));
     await interaction.editReply(lang(guildId).global.registered_for_updates.replace('{0}', `<#${channel.id}>`));
 };
 
