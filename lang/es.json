@@ -1,0 +1,22 @@
+{
+  "global": {
+    "error_notified": "Un error ha ocurrido. Los desarrolladores fueron notificados!",
+    "command_not_implemented": "Comando {0} aun no implementado!",
+    "registered_for_updates": "El canal {0} ha sido registrado para recibir actualizaciones!",
+    "invalid_lang": "Lenguaje invalido!",
+    "lang_set": "Lenguaje configurado como `{0}`!"
+  },
+  "apple_update": {
+    "no_changelog": "No hay notas de actualización para esta versión.",
+    "public": "Nueva actualizacion publica de {0}",
+    "beta": "Nueva beta de {0}",
+    "version": "Versión",
+    "build": "ID de Compilación",
+    "changelog": "Notas de Actualización",
+    "size": "Tamaño",
+    "post_date": "Fecha de Publicación",
+    "release_notes_truncated": "Las notas de actualización fueron recortadas.",
+    "no_update_found": "No se han encontrado actualizaciones disponibles",
+    "invalid_os": "Sistema Operativo Invalido!"
+  }
+}

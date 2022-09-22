@@ -1,6 +1,9 @@
 const appleConfig = require('../apple/config.json')
 const { getAppleUpdate } = require('../apple');
-const {SlashCommandBuilder} = require('discord.js');
+const { post } = require('../embed');
+const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
+const { brightColor } = require('randomcolor')
+const {lang} = require("../i18n");
 
 const data = new SlashCommandBuilder()
     .setName('apple-update')
@@ -24,6 +27,7 @@ const data = new SlashCommandBuilder()
 data.onExecute = async (interaction) => {
     try {
         await interaction.deferReply();
+        const guildId = interaction.guildId;
         const os = interaction.options.getString('os');
         const beta = interaction.options.getBoolean('beta');
         let audience;
@@ -45,20 +49,23 @@ data.onExecute = async (interaction) => {
                 break;
         }
         if(audience == null) {
-            return interaction.editReply('Invalid OS');
+            return interaction.editReply(lang(guildId).apple_update.invalid_os);
         }
 
-
         const update = await getAppleUpdate(audience, os, !!beta);
-        console.log(update);
         if(update) {
-            return interaction.editReply(`**${os} ${update.os_version} (${update.os_build})**\n${update.os_changelog}\n${update.os_download}`);
+            const embed = await post(update, os, guildId);
+            const embeds = [embed];
+            if(update.os_changelog !== '--') {
+                embeds.push(new EmbedBuilder().setColor(brightColor()).setTitle(lang(guildId).apple_update.changelog).setDescription(update.os_changelog).setTimestamp());
+            }
+            return interaction.editReply({ embeds });
         } else {
-            return interaction.editReply('No update found');
+            return interaction.editReply(lang(guildId).apple_update.no_update_found);
         }
     }catch (e) {
         console.log(e);
-        return interaction.editReply('An error occurred');
+        return interaction.editReply(lang(guildId).global.error_notified);
     }
 
 };

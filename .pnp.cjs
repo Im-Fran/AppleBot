@@ -39,8 +39,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["bufferutil", "npm:4.0.6"],\
             ["discord.js", "npm:14.3.0"],\
             ["dotenv", "npm:16.0.2"],\
+            ["randomcolor", "npm:0.6.2"],\
             ["sanitize-html", "npm:2.7.2"],\
             ["utf-8-validate", "npm:5.0.9"],\
+            ["uuid", "npm:9.0.0"],\
             ["zlib-sync", "npm:0.1.7"]\
           ],\
           "linkType": "SOFT"\
@@ -193,8 +195,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["bufferutil", "npm:4.0.6"],\
             ["discord.js", "npm:14.3.0"],\
             ["dotenv", "npm:16.0.2"],\
+            ["randomcolor", "npm:0.6.2"],\
             ["sanitize-html", "npm:2.7.2"],\
             ["utf-8-validate", "npm:5.0.9"],\
+            ["uuid", "npm:9.0.0"],\
             ["zlib-sync", "npm:0.1.7"]\
           ],\
           "linkType": "SOFT"\
@@ -1294,6 +1298,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["randomcolor", [\
+        ["npm:0.6.2", {\
+          "packageLocation": "./.yarn/cache/randomcolor-npm-0.6.2-6644bb5036-539345c028.zip/node_modules/randomcolor/",\
+          "packageDependencies": [\
+            ["randomcolor", "npm:0.6.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["readable-stream", [\
         ["npm:3.6.0", {\
           "packageLocation": "./.yarn/cache/readable-stream-npm-3.6.0-23a4a5eb56-d4ea81502d.zip/node_modules/readable-stream/",\
@@ -1579,6 +1592,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/util-deprecate-npm-1.0.2-e3fe1a219c-474acf1146.zip/node_modules/util-deprecate/",\
           "packageDependencies": [\
             ["util-deprecate", "npm:1.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["uuid", [\
+        ["npm:9.0.0", {\
+          "packageLocation": "./.yarn/cache/uuid-npm-9.0.0-46c41e3e43-8dd2c83c43.zip/node_modules/uuid/",\
+          "packageDependencies": [\
+            ["uuid", "npm:9.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\

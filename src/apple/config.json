@@ -84,7 +84,7 @@
       "model": "J293AP",
       "name": "Mac",
       "update_asset_type": "com.apple.MobileAsset.MacSoftwareUpdate",
-      "doc_asset_type": "com.apple.MobileAsset.MacSoftwareUpdateDocumentation"
+      "doc_asset_type": "com.apple.MobileAsset.SoftwareUpdateDocumentation"
     },
 
     "display": {
@@ -94,7 +94,7 @@
       "model": "J327AP",
       "name": "Display",
       "update_asset_type": "com.apple.MobileAsset.MacSoftwareUpdate",
-      "doc_asset_type": "com.apple.MobileAsset.MacSoftwareUpdateDocumentation"
+      "doc_asset_type": "com.apple.MobileAsset.SoftwareUpdateDocumentation"
     }
   }
 }

@@ -1,0 +1,22 @@
+{
+  "global": {
+    "error_notified": "An error has occurred. The dev team has been notified!",
+    "command_not_implemented": "Command {0} is not yet implemented!",
+    "registered_for_updates": "The channel {0} has been registered for updates!",
+    "invalid_lang": "Invalid language!",
+    "lang_set": "Language set to {0}!"
+  },
+  "apple_update": {
+    "no_changelog": "No Changelog available for this version.",
+    "public": "New {0} Release Update",
+    "beta": "New {0} Beta Update",
+    "version": "Version",
+    "build": "Build",
+    "changelog": "Changelog",
+    "size": "Size",
+    "post_date": "Post Date",
+    "release_notes_truncated": "Release notes have been truncated",
+    "no_update_found": "No update found.",
+    "invalid_os": "Invalid OS!"
+  }
+}

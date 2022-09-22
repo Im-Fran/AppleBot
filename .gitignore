@@ -339,4 +339,5 @@ $RECYCLE.BIN/
 !.yarnrc.yml
 
 ### custom ###
-.cache.json
+cache.json
+lang.json
