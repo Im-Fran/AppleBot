@@ -11,6 +11,7 @@
     "bufferutil": "^4.0.6",
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
+    "md5": "^2.3.0",
     "randomcolor": "^0.6.2",
     "sanitize-html": "^2.7.2",
     "utf-8-validate": "^5.0.9",

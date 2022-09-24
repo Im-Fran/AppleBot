@@ -4,7 +4,9 @@
     "command_not_implemented": "Command {0} is not yet implemented!",
     "registered_for_updates": "The channel {0} has been registered for updates!",
     "invalid_lang": "Invalid language!",
-    "lang_set": "Language set to {0}!"
+    "lang_set": "Language set to `{0}`!",
+    "no_perms": "You don't have permission to do that!",
+    "done": "Done!"
   },
   "apple_update": {
     "no_changelog": "No Changelog available for this version.",
@@ -18,5 +20,12 @@
     "release_notes_truncated": "Release notes have been truncated",
     "no_update_found": "No update found.",
     "invalid_os": "Invalid OS!"
+  },
+  "apple_pay": {
+    "watching": "Now watching the country code `{0}`!",
+    "arrived": "ApplePay has arrived!",
+    "arrived_description": "The api **{0}** shows that the country code {1} is now supported by ApplePay. These are the supported networks: {2}",
+    "updated": "ApplePay updated!",
+    "updated_description": "The api **{0}** shows that the country code {1} has received an update. The old config is [here]({2}) and the new config is [here]({3}). We recommend you to use [json diff](https://json-diff.com/) for the json difference. The current available networks are: {4}"
   }
 }

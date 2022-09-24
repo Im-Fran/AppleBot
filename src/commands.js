@@ -3,15 +3,15 @@ const fs = require('fs');
 
 const commands = [];
 
-fs.readdirSync('./src/commands').filter(it => it.endsWith('.js')).forEach((file) => {
-    const nameWithoutExtension = file.substring(0, file.length - 3);
-    const command = require(`./commands/${nameWithoutExtension}`);
-    if(command.name && command.description && typeof command.onExecute === 'function') {
-        commands.push(command);
-    }
-});
-
 const init = (rest) => {
+    fs.readdirSync('./src/commands').filter(it => it.endsWith('.js')).forEach((file) => {
+        const nameWithoutExtension = file.substring(0, file.length - 3);
+        const command = require(`./commands/${nameWithoutExtension}`);
+        if(command.name && command.description && typeof command.onExecute === 'function') {
+            commands.push(command);
+        }
+    });
+
     (async () => {
         try {
             console.log('Started refreshing application (/) commands.');
@@ -30,5 +30,5 @@ const init = (rest) => {
 
 module.exports = {
     initCommands: init,
-    getCommandMeta: (name) => commands.find(it => it.name === name)
+    getCommandMeta: (name) => commands.find(it => it.name.toLowerCase() === name.toLowerCase())
 }

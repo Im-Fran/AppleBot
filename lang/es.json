@@ -4,7 +4,9 @@
     "command_not_implemented": "Comando {0} aun no implementado!",
     "registered_for_updates": "El canal {0} ha sido registrado para recibir actualizaciones!",
     "invalid_lang": "Lenguaje invalido!",
-    "lang_set": "Lenguaje configurado como `{0}`!"
+    "lang_set": "Lenguaje configurado como `{0}`!",
+    "no_perms": "No tienes permisos para hacer eso!",
+    "done": "Hecho!"
   },
   "apple_update": {
     "no_changelog": "No hay notas de actualización para esta versión.",
@@ -18,5 +20,12 @@
     "release_notes_truncated": "Las notas de actualización fueron recortadas.",
     "no_update_found": "No se han encontrado actualizaciones disponibles",
     "invalid_os": "Sistema Operativo Invalido!"
+  },
+  "apple_pay": {
+    "watching": "Ahora buscando actualizaciones para el código de país `{0}`!",
+    "arrived": "ApplePay ha llegado!",
+    "arrived_description": "La API **{0}** muestra que el código de país {1} tiene ApplePay disponible. Podrás usar las siguientes tarjetas con ApplePay: {2}",
+    "updated": "ApplePay actualizado!",
+    "updated_description": "La API **{0}** muestra que el código de páis {1} ha sido actualizado. La configuracion antigua está [acá]({2}) y la nueva por [aquí]({3}). Te recomendamos usar [json diff](https://json-diff.com/) para comparar los archivos. Las tarjetas disponibles ahora son: {4}"
   }
 }

@@ -2,7 +2,6 @@ const {SlashCommandBuilder} = require('discord.js');
 const fs = require('fs');
 const {lang, setLang} = require("../i18n");
 
-const langFiles = fs.readdirSync(rootDir + '/lang').filter(file => file.endsWith('.json')).map(it => it.replace('.json', ''));
 const data = new SlashCommandBuilder()
     .setName('set-lang')
     .setDescription('Sets the language for the server!')
@@ -20,7 +19,7 @@ data.onExecute = async (interaction) => {
     await interaction.deferReply()
     const langId = interaction.options.getString('language');
     const guildId = interaction.guildId;
-    if (!langFiles.includes(lang)) {
+    if (!fs.existsSync(langDir + langId + '.json')) {
         return interaction.editReply({
             content: lang(guildId).global.invalid_lang,
             ephemeral: true,

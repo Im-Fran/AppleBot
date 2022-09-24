@@ -39,6 +39,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["bufferutil", "npm:4.0.6"],\
             ["discord.js", "npm:14.3.0"],\
             ["dotenv", "npm:16.0.2"],\
+            ["md5", "npm:2.3.0"],\
             ["randomcolor", "npm:0.6.2"],\
             ["sanitize-html", "npm:2.7.2"],\
             ["utf-8-validate", "npm:5.0.9"],\
@@ -195,6 +196,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["bufferutil", "npm:4.0.6"],\
             ["discord.js", "npm:14.3.0"],\
             ["dotenv", "npm:16.0.2"],\
+            ["md5", "npm:2.3.0"],\
             ["randomcolor", "npm:0.6.2"],\
             ["sanitize-html", "npm:2.7.2"],\
             ["utf-8-validate", "npm:5.0.9"],\
@@ -370,6 +372,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["charenc", [\
+        ["npm:0.0.2", {\
+          "packageLocation": "./.yarn/cache/charenc-npm-0.0.2-aca0c2f207-81dcadbe57.zip/node_modules/charenc/",\
+          "packageDependencies": [\
+            ["charenc", "npm:0.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["chownr", [\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/chownr-npm-2.0.0-638f1c9c61-c57cf9dd07.zip/node_modules/chownr/",\
@@ -421,6 +432,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/console-control-strings-npm-1.1.0-e3160e5275-8755d76787.zip/node_modules/console-control-strings/",\
           "packageDependencies": [\
             ["console-control-strings", "npm:1.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["crypt", [\
+        ["npm:0.0.2", {\
+          "packageLocation": "./.yarn/cache/crypt-npm-0.0.2-033627d94f-baf4c7bbe0.zip/node_modules/crypt/",\
+          "packageDependencies": [\
+            ["crypt", "npm:0.0.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -886,6 +906,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["is-buffer", [\
+        ["npm:1.1.6", {\
+          "packageLocation": "./.yarn/cache/is-buffer-npm-1.1.6-08199d9ccc-4a186d995d.zip/node_modules/is-buffer/",\
+          "packageDependencies": [\
+            ["is-buffer", "npm:1.1.6"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["is-fullwidth-code-point", [\
         ["npm:3.0.0", {\
           "packageLocation": "./.yarn/cache/is-fullwidth-code-point-npm-3.0.0-1ecf4ebee5-44a30c2945.zip/node_modules/is-fullwidth-code-point/",\
@@ -978,6 +1007,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["promise-retry", "npm:2.0.1"],\
             ["socks-proxy-agent", "npm:7.0.0"],\
             ["ssri", "npm:9.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["md5", [\
+        ["npm:2.3.0", {\
+          "packageLocation": "./.yarn/cache/md5-npm-2.3.0-86c49d3915-a63cacf401.zip/node_modules/md5/",\
+          "packageDependencies": [\
+            ["md5", "npm:2.3.0"],\
+            ["charenc", "npm:0.0.2"],\
+            ["crypt", "npm:0.0.2"],\
+            ["is-buffer", "npm:1.1.6"]\
           ],\
           "linkType": "HARD"\
         }]\
