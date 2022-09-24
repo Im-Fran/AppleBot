@@ -2,7 +2,7 @@ const appleConfig = require('../apple/config.json')
 const { getAppleUpdate } = require('../apple');
 const { post } = require('../embed');
 const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
-const { brightColor } = require('randomcolor')
+const brightColor  = require('randomcolor')
 const {lang} = require("../i18n");
 
 const data = new SlashCommandBuilder()
@@ -25,9 +25,9 @@ const data = new SlashCommandBuilder()
     )
 
 data.onExecute = async (interaction) => {
+    const guildId = interaction.guildId;
     try {
         await interaction.deferReply();
-        const guildId = interaction.guildId;
         const os = interaction.options.getString('os');
         const beta = interaction.options.getBoolean('beta');
         let audience;
