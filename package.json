@@ -1,5 +1,5 @@
 {
-  "name": "AppleConfigWatcher",
+  "name": "appleconfigwatcher",
   "packageManager": "yarn@3.2.2",
   "scripts": {
     "start": "node src/index.js"
@@ -12,6 +12,7 @@
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
     "md5": "^2.3.0",
+    "pg": "^8.8.0",
     "randomcolor": "^0.6.2",
     "sanitize-html": "^2.7.2",
     "utf-8-validate": "^5.0.9",

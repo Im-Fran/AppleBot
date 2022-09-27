@@ -1,15 +1,15 @@
 require('./env'); // Load the .env file
-require('./bootstrap')
+require('./bootstrap');
 
-console.log('Cache file: ' + cacheFile);
-const { lang } = require('./i18n');
-const { initUpdateChecker } = require('./apple');
-
-const { initCommands, getCommandMeta } = require('./commands'); // Get command methods
 const { REST } = require('@discordjs/rest'); // Discord REST API
 const { Client, GatewayIntentBits } = require('discord.js'); // Discord.js
+
+const { initUpdateChecker } = require('./apple/apple');
+const { initCommands } = require('./commands'); // Get command methods
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN); // Create a new REST instance
+
 initCommands(rest);
+
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildMessageReactions],
     partials: [ 'CHANNEL' ],

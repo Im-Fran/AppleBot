@@ -1,5 +1,5 @@
 const appleConfig = require('../apple/config.json')
-const { getAppleUpdate } = require('../apple');
+const { getAppleUpdate } = require('../apple/apple');
 const { post } = require('../embed');
 const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const brightColor  = require('randomcolor')
