@@ -1,6 +1,6 @@
-const {SlashCommandBuilder} = require('discord.js');
-const { readFileSync, writeFileSync } = require('fs');
-const {lang} = require("../i18n");
+const { getClient } = require('../db');
+const { lang } = require("../i18n");
+const { SlashCommandBuilder } = require('discord.js');
 
 const data = new SlashCommandBuilder()
     .setName('set-applepay-watcher')
@@ -8,16 +8,19 @@ const data = new SlashCommandBuilder()
     .addStringOption(option => option.setName('country').setDescription('The country code of the country you want to watch').setRequired(true))
 
 data.onExecute = async (interaction) => {
-    await interaction.deferReply()
     const country = interaction.options.getString('country');
     const guildId = interaction.guild.id;
-    const content = readFileSync(applePayWatcherCache, 'utf-8')
-    const cache = content.length === 0 ? {} : JSON.parse(content);
-    cache[guildId] = {
-        country,
+    const client = await getClient();
+    const upsertQuery = `INSERT INTO applepay_watcher (guild_id, country) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET country = $2`;
+    const res = await client.query(upsertQuery, [guildId, country]);
+    const langRes = await lang(guildId);
+    if (res.rowCount === 1) {
+        await interaction.editReply(langRes.apple_pay.watching.replace('{0}', country));
+    } else {
+        await interaction.editReply(langRes.global.error_notified);
     }
-    writeFileSync(applePayWatcherCache, JSON.stringify(cache), 'utf-8');
-    await interaction.editReply({content: lang(guildId).apple_pay.watching.replace('{0}', country), ephemeral: true});
+
+    await client.end();
 };
 
 module.exports = data;

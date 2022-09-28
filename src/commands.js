@@ -1,3 +1,4 @@
+const { execute } = require('./db');
 const { Routes } = require('discord.js');
 const fs = require('fs');
 
@@ -16,7 +17,11 @@ const init = (rest) => {
         try {
             console.log('Started refreshing application (/) commands.');
 
-            await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commands });
+            const res = await execute('SELECT guild_id FROM guilds_lang;');
+            for(const row of res.rows) {
+                await rest.put(Routes.applicationCommands(process.env.CLIENT_ID, row.guild_id), { body: commands });
+            }
+
             commands.forEach(it => {
                 console.log('Registered command: /' + it.name);
             })

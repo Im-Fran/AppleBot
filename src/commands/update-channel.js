@@ -1,5 +1,5 @@
-const {SlashCommandBuilder} = require('discord.js');
-const fs = require('fs');
+const { getClient } = require('../db');
+const { SlashCommandBuilder } = require('discord.js');
 const { lang } = require('../i18n');
 
 const data = new SlashCommandBuilder()
@@ -12,16 +12,19 @@ const data = new SlashCommandBuilder()
     );
 
 data.onExecute = async (interaction) => {
-    await interaction.deferReply();
+    const client = await getClient();
     const channel = interaction.options.getChannel('channel');
     const guildId = interaction.guildId;
-    const content = fs.readFileSync(notificationChannelsCache, 'utf-8');
-    const cache = content.length === 0 ? {} : JSON.parse(content);
-    const update_channels = cache.update_channels || {};
-    update_channels[guildId] = channel.id;
-    cache.update_channels = update_channels;
-    fs.writeFileSync(notificationChannelsCache, JSON.stringify(cache));
-    await interaction.editReply(lang(guildId).global.registered_for_updates.replace('{0}', `<#${channel.id}>`));
+
+    const langRes = await lang(guildId);
+    const upsertQuery = `INSERT INTO update_channel (guild_id, channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET channel_id = $2`;
+    const res = await client.query(upsertQuery, [guildId, channel.id]);
+    if (res.rowCount === 1) {
+        await interaction.editReply(langRes.update_channel.registered.replace('{0}', channel.toString()));
+    } else {
+        await interaction.editReply(langRes.global.error_notified);
+    }
+    await client.end();
 };
 
 module.exports = data;
