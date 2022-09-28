@@ -26,7 +26,7 @@ client.on('interactionCreate', async interaction => {
     }catch (e) {
         console.log(e);
         try {
-            await interaction.reply({ content: langRes.global.error_notified, ephemeral: true });
+            await interaction.editReply({ content: langRes.global.error_notified, ephemeral: true });
         }catch (e) {
             try {
                 await interaction.editReply({ content: langRes.global.error_notified, ephemeral: true });
