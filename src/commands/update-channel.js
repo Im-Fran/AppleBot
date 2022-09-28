@@ -1,7 +1,6 @@
-const { getClient } = require('pg');
+const { getClient } = require('../db');
 const { SlashCommandBuilder } = require('discord.js');
 const { lang } = require('../i18n');
-const client = getClient();
 
 const data = new SlashCommandBuilder()
     .setName('update-channel')
@@ -13,6 +12,7 @@ const data = new SlashCommandBuilder()
     );
 
 data.onExecute = async (interaction) => {
+    const client = await getClient();
     await interaction.deferReply();
     const channel = interaction.options.getChannel('channel');
     const guildId = interaction.guildId;
@@ -25,6 +25,7 @@ data.onExecute = async (interaction) => {
     } else {
         await interaction.editReply(langRes.global.error_notified);
     }
+    await client.end();
 };
 
 module.exports = data;

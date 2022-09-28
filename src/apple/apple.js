@@ -1,9 +1,7 @@
-const { getClient } = require('pg');
 const { post } = require('../embed');
 const rest = require('./rest');
 const config = require('./config.json')
-
-const client = getClient();
+const { getClient } = require('../db');
 let lastCheck = 0;
 
 /**
@@ -30,6 +28,7 @@ const getUpdate = async (audience, os, isBeta) => {
 }
 
 const postUpdateNotification = async (update, os) => {
+    const client = await getClient();
     // Select all channels and guilds from update_channel
     const query = await client.query('SELECT guild_id, channel_id FROM update_channel;');
     for (let row of query.rows) {
@@ -43,9 +42,12 @@ const postUpdateNotification = async (update, os) => {
             }
         }
     }
+
+    await client.end();
 }
 
 const checkUpdates = async () => {
+    const client = await getClient();
     const now = new Date();
     if(lastCheck-now < (5 * 60 * 1000) && lastCheck !== 0){
         return;
@@ -74,6 +76,8 @@ const checkUpdates = async () => {
 
     // Update last check
     lastCheck = new Date();
+
+    await client.end();
 }
 const initUpdateChecker = () => {
     checkUpdates().then(() => {

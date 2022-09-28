@@ -24,4 +24,4 @@ client.on('ready', () => {
     console.log('Client ready');
     initUpdateChecker(); // Start the apple update checker
     require('./tools/apple-config') // Load the apple pay checker
-})
+});

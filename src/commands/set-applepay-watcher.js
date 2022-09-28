@@ -1,4 +1,4 @@
-const { getClient } = require('pg');
+const { getClient } = require('../db');
 const { lang } = require("../i18n");
 const { SlashCommandBuilder } = require('discord.js');
 
@@ -11,16 +11,17 @@ data.onExecute = async (interaction) => {
     await interaction.deferReply()
     const country = interaction.options.getString('country');
     const guildId = interaction.guild.id;
-    const client = getClient();
+    const client = await getClient();
     const upsertQuery = `INSERT INTO applepay_watcher (guild_id, country) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET country = $2`;
     const res = await client.query(upsertQuery, [guildId, country]);
+    const langRes = await lang(guildId);
     if (res.rowCount === 1) {
-        const langRes = await lang(guildId);
-        await interaction.editReply(langRes.applepay_watcher.watching.replace('{0}', country));
+        await interaction.editReply(langRes.apple_pay.watching.replace('{0}', country));
     } else {
         await interaction.editReply(langRes.global.error_notified);
     }
 
+    await client.end();
 };
 
 module.exports = data;

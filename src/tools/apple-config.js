@@ -1,4 +1,4 @@
-const { getClient } = require('pg');
+const { getClient } = require('../db');
 const { EmbedBuilder } = require('discord.js');
 const { readFileSync, writeFileSync } = require('fs');
 const { get, post } = require('axios');
@@ -8,9 +8,9 @@ const { lang } = require("../i18n");
 const httpsAgent = new https.Agent({
     rejectUnauthorized: false
 });
-const client = getClient();
 
 const checkFile = async (file) => {
+    /*
     await get(`https://smp-device-content.apple.com/static/region/v2/${file}`, {
         httpsAgent,
         responseType: 'json'
@@ -44,9 +44,12 @@ const checkFile = async (file) => {
     }).catch(e => {
         console.error(e);
     });
+     */
 };
 
 const check = async () => {
+
+    const client = await getClient();
     console.log('Checking for ApplePay updates...');
     // Update the wolfmeister cache
     console.log('Checking with wolfmeister')
@@ -60,10 +63,10 @@ const check = async () => {
     if(res && res.data){
         try {
             const json = res.data;
-            const encoded = new Buffer(JSON.stringify(json)).toString('base64');
+            const encoded = new Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
             // Select from cached_sites in db
-            const cached = await client.query('SELECT encoded FROM cached_sites WHERE site = $1 LIMIT 1', ['wolfmeister']);
-            if (cached.rows.length > 0 || cached.rows[0].encoded !== encoded) {
+            const cached = await client.query('SELECT encoded FROM cached_sites WHERE url = $1 LIMIT 1', ['wolfmeister']);
+            if ((cached.rows[0] || {}).encoded !== encoded) {
                 // get watchers from applepay_watcher
                 const watchers_query = await client.query('SELECT guild_id, country FROM applepay_watcher');
                 for(let row of watchers_query.rows){
@@ -77,11 +80,11 @@ const check = async () => {
                             const channel = client.channels.cache.get(updateChannel.rows[0].channel_id);
                             if(channel){
                                 const guildCache = await client.query('SELECT last from watchers_cache WHERE guild_id = $1 LIMIT 1', [guild_id]);
-                                const encodedData = new Buffer(JSON.stringify(data)).toString('base64');
+                                const encodedData = new Buffer.from(JSON.stringify(data), 'utf-8').toString('base64');
                                 if(guildCache.rows.length > 0) {
                                     // Check if new data is different from the last one
                                     if(guildCache.rows[0].last !== encodedData){
-                                        const previousDecoded = JSON.parse(new Buffer(guildCache.rows[0].last, 'base64').toString('utf-8'));
+                                        const previousDecoded = JSON.parse(new Buffer.from(guildCache.rows[0].last, 'base64').toString('utf-8'));
                                         res = await post('https://hastebin.com/documents', JSON.stringify(previousDecoded), {
                                             httpsAgent
                                         }).catch(err => {
@@ -125,14 +128,13 @@ const check = async () => {
             }
 
             // Update cache
-            await client.query('UPDATE cached_sites SET encoded = $1 WHERE site = $2', [encoded, url]);
+            await client.query('UPDATE cached_sites SET encoded = $1 WHERE url = $2', [encoded, url]);
         }catch (e) {
             console.error(e);
         }
     }
 
-    writeFileSync(applePayWatcherCache, JSON.stringify(watcherCache), 'utf-8');
-    writeFileSync(cacheFile, JSON.stringify(cache), 'utf-8');
+    await client.end();
 };
 
 check().then(() => setInterval(check, 1000 * 60 * 5)); // Run interval every 5 minutes after first check
