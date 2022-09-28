@@ -13,7 +13,6 @@ const data = new SlashCommandBuilder()
 
 data.onExecute = async (interaction) => {
     const client = await getClient();
-    await interaction.deferReply();
     const channel = interaction.options.getChannel('channel');
     const guildId = interaction.guildId;
 

@@ -6,7 +6,6 @@ const data = new SlashCommandBuilder()
     .setDescription('Replies with Pong!');
 
 data.onExecute = async (interaction) => {
-    await interaction.deferReply();
     const now = Date.now();
     const client = await getClient();
     await client.query('SELECT 1');

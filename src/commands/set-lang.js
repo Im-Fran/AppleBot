@@ -16,7 +16,6 @@ const data = new SlashCommandBuilder()
     )
 
 data.onExecute = async (interaction) => {
-    await interaction.deferReply()
     const langId = interaction.options.getString('language');
     const guildId = interaction.guildId;
     if (!fs.existsSync(langDir + langId + '.json')) {

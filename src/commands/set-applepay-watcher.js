@@ -8,7 +8,6 @@ const data = new SlashCommandBuilder()
     .addStringOption(option => option.setName('country').setDescription('The country code of the country you want to watch').setRequired(true))
 
 data.onExecute = async (interaction) => {
-    await interaction.deferReply()
     const country = interaction.options.getString('country');
     const guildId = interaction.guild.id;
     const client = await getClient();

@@ -26,9 +26,8 @@ const data = new SlashCommandBuilder()
 
 data.onExecute = async (interaction) => {
     const guildId = interaction.guildId;
+    const langRes = await lang(guildId);
     try {
-        const langRes = await lang(guildId);
-        await interaction.deferReply();
         const os = interaction.options.getString('os');
         const beta = interaction.options.getBoolean('beta');
         let audience;

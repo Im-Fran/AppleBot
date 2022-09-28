@@ -7,13 +7,16 @@ client.on('interactionCreate', async interaction => {
     try {
         const start = Date.now();
         if(interaction.isChatInputCommand()){
+            await interaction.deferReply();
             const meta = getCommandMeta(interaction.commandName);
             if (typeof meta.onExecute === 'function') {
                 await meta.onExecute(interaction);
             } else {
-                await interaction.reply({ content: langRes.global.command_not_implemented.replace('{0}', interaction.commandName), ephemeral: true });
+                await interaction.editReply({ content: langRes.global.command_not_implemented.replace('{0}', interaction.commandName), ephemeral: true });
             }
         }
+
+
 
         const end = Date.now();
         const diffInMillis = end - start;
