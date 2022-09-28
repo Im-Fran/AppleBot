@@ -1,6 +1,6 @@
 const dotenv = require('dotenv')
 const fs = require('fs');
-const vars = ['BOT_TOKEN', 'CLIENT_ID', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS']
+const vars = ['BOT_TOKEN', 'CLIENT_ID', 'DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD']
 
 
 // Check if we have a .env file
