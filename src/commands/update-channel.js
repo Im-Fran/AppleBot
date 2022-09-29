@@ -20,7 +20,7 @@ data.onExecute = async (interaction) => {
     const upsertQuery = `INSERT INTO update_channel (guild_id, channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET channel_id = $2`;
     const res = await client.query(upsertQuery, [guildId, channel.id]);
     if (res.rowCount === 1) {
-        await interaction.editReply(langRes.update_channel.registered.replace('{0}', channel.toString()));
+        await interaction.editReply(langRes.global.registered_for_updates.replace('{0}', channel.toString()));
     } else {
         await interaction.editReply(langRes.global.error_notified);
     }

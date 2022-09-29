@@ -1,6 +1,7 @@
-const { getClient } = require('../db');
+const { prepared } = require('../db');
 const { EmbedBuilder } = require('discord.js');
 const { readFileSync, writeFileSync } = require('fs');
+const brightColor = require('randomcolor');
 const { get, post } = require('axios');
 const md5 = require('md5');
 const https = require('https');
@@ -10,143 +11,105 @@ const httpsAgent = new https.Agent({
 });
 
 const checkFile = async (file) => {
-    /*
-    await get(`https://smp-device-content.apple.com/static/region/v2/${file}`, {
-        httpsAgent,
-        responseType: 'json'
-    }).then(res => {
-        const encoded = md5(JSON.stringify(res.data) + country);
-        const cache = JSON.parse(readFileSync(cacheFile, 'utf-8') || '{}');
-        if (cache && cache[file] !== encoded) {
-            const json = res.data
-            const chile = json.SupportedRegions[country];
-            if (chile) {
-                let networks = chile.PaymentSetupFeaturedNetworksV3 || [];
-                if (networks.length > 0) {
-                    const updateChannels = JSON.parse(readFileSync(notificationChannelsCache, 'utf8')) || {};
-                    for (let guildId of Object.keys(updateChannels.update_channels || {})) {
-                        const server = client.guilds.cache.get(guildId);
-                        const channel = server.channels.cache.get(updateChannels.update_channels[guildId]);
-                        if (channel) {
-                            const embed = new EmbedBuilder()
-                                .setTitle('Apple Pay ha llegado! (apple.com)')
-                                .setDescription(`De acuerdo a la api de Apple (${file}), Apple Pay ha llegado a Chile! Puedes pagar con los siguientes tipos de tarjeta: \n` + networks.join(', '))
-                                .setTimestamp()
-                            channel.send({embeds: [embed]});
-                        }
-                    }
-
-                    cache[file] = encoded;
-                    writeFileSync(cacheFile, JSON.stringify(cache), 'utf-8');
-                }
-            }
-        }
-    }).catch(e => {
-        console.error(e);
-    });
-     */
-};
-
-const check = async (previousRequest) => {
-
-    const client = await getClient();
-    console.log('Checking for ApplePay updates...');
-    // Update the wolfmeister cache
-    console.log('Checking with wolfmeister')
-    let url = 'https://www.wolfmeister.dev/api/v1/wallets/apple/payments'
+    // First we get the latest apple config
+    let url = `https://smp-device-content.apple.com/static/region/v2/${file}`;
     let res = await get(url, {
         httpsAgent,
-        headers: {
-            'set-cookie': previousRequest ? previousRequest.headers['set-cookie'] : undefined,
-        },
     }).catch(err => {
         console.error(err);
     })
 
-    // Check if it's from cloudflare
-    if (res.data && res.data.includes('Cloudflare') && res.data.includes('Ray ID') && res.data.includes('5 seconds')) {
-        console.log('Cloudflare detected, retrying in 5 seconds...')
-        setTimeout(() => {
-            check(res);
-        }, 7000);
-        return;
-    }
+    if (res && res.data) {
+        const json = res.data
+        const supportedRegions = json.SupportedRegions
+        const encoded = new Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
+        const cached = await prepared('SELECT encoded FROM cached_sites WHERE url = $1', [url])
+        if((cached.rows[0] || {}).encoded !== encoded){
+            // We have a new config! Now let's check for every country that we're watching
+            const watchers = await prepared('SELECT guild_id,country FROM applepay_watcher;');
+            for(let watcher of watchers.rows){
+                const country = watcher.country;
+                const data = supportedRegions[country];
+                if(data) {
+                    const guildId = watcher.guild_id;
+                    // Check if it's the first time seeing it
+                    const encodedData = new Buffer.from(JSON.stringify(data), 'utf-8').toString('base64');
+                    const previousData = await prepared('SELECT last FROM watchers_cache WHERE id = $1', [guildId + '-' + url]);
+                    const langRes = await lang(guildId);
+                    let networks = data.PaymentSetupFeaturedNetworksV3 || [];
+                    if(networks.length === 0) {
+                        continue;
+                    }
 
-    if(res && res.data){
-        try {
-            const json = res.data;
-            const encoded = new Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
-            // Select from cached_sites in db
-            const cached = await client.query('SELECT encoded FROM cached_sites WHERE url = $1 LIMIT 1', ['wolfmeister']);
-            if ((cached.rows[0] || {}).encoded !== encoded) {
-                // get watchers from applepay_watcher
-                const watchers_query = await client.query('SELECT guild_id, country FROM applepay_watcher');
-                for(let row of watchers_query.rows){
-                    const country = row.country;
-                    const guild_id = row.guild_id;
-                    const data = json.find(it => it.countryCode === country);
-                    const langRes = await lang(guild_id);
-                    if(data){
-                        const updateChannel = await client.query('SELECT channel_id FROM update_channel WHERE guild_id = $1 LIMIT 1', [guild_id]);
-                        if(updateChannel.rows.length > 0){
+                    if(previousData.rows.length === 0){ // Just arrived!
+                        // Fetch update channel
+                        const updateChannel = await prepared('SELECT channel_id FROM update_channel WHERE guild_id = $1', [guildId]);
+                        if(updateChannel.rows.length > 0) {
                             const channel = client.channels.cache.get(updateChannel.rows[0].channel_id);
-                            if(channel){
-                                const guildCache = await client.query('SELECT last from watchers_cache WHERE guild_id = $1 LIMIT 1', [guild_id]);
-                                const encodedData = new Buffer.from(JSON.stringify(data), 'utf-8').toString('base64');
-                                if(guildCache.rows.length > 0) {
-                                    // Check if new data is different from the last one
-                                    if(guildCache.rows[0].last !== encodedData){
-                                        const previousDecoded = JSON.parse(new Buffer.from(guildCache.rows[0].last, 'base64').toString('utf-8'));
-                                        res = await post('https://hastebin.com/documents', JSON.stringify(previousDecoded), {
-                                            httpsAgent
+                            if (channel) {
+                                const embed = new EmbedBuilder()
+                                    .setTitle(langRes.apple_pay.arrived)
+                                    .setDescription(langRes.apple_pay.arrived_description.replace('{0}', url).replace('{1}', country).replace('{2}', networks.map(it => {
+                                        return `\n- **${it}**`;
+                                    })))
+                                    .setTimestamp()
+                                    .setColor(brightColor());
+                                channel.send({embeds: [embed]});
+                            }
+                        }
+                    } else {
+                        if(previousData.rows[0].last !== encodedData){
+                            // Fetch update channel
+                            const updateChannel = await prepared('SELECT channel_id FROM update_channel WHERE guild_id = $1', [guildId]);
+                            if(updateChannel.rows.length > 0){
+                                const channel = client.channels.cache.get(updateChannel.rows[0].channel_id);
+                                if(channel){
+                                    // It's changed! So first we upload the previous data
+                                    const previousDataJson = JSON.parse(new Buffer.from(previousData.rows[0].last, 'base64').toString('utf-8'));
+                                    res = await post('https://hastebin.com/documents', previousDataJson, {
+                                        httpsAgent,
+                                    }).catch(err => {
+                                        console.error(err);
+                                    });
+
+                                    if(res && res.data) {
+                                        const previousKey = res.data.key;
+                                        res = await post('https://hastebin.com/documents', data, {
+                                            httpsAgent,
                                         }).catch(err => {
                                             console.error(err);
-                                        })
+                                        });
 
                                         if(res && res.data) {
-                                            const previousKey = res.data.key;
-
-                                            res = await post('https://hastebin.com/documents', JSON.stringify(data), {
-                                                httpsAgent
-                                            }).catch(err => {
-                                                console.error(err);
-                                            });
-
-                                            if(res && res.data) {
-                                                const newKey = res.data.key;
-                                                // Then send the message
-                                                const embed = new EmbedBuilder()
-                                                    .setTitle(langRes.apple_pay.updated)
-                                                    .setDescription(langRes.apple_pay.updated_description.replace('{0}', 'wolfmeister.dev').replace('{1}', country).replace('{2}', `https://hastebin.com/raw/${previousKey}`).replace('{3}', `https://hastebin.com/raw/${newKey}`).replace('{4}', data.supportedNetworks.map(it => `\n- **${it}**`)))
-                                                    .setTimestamp()
-                                                channel.send({embeds: [embed]});
-                                                watcherCache[guildId].last = data;
-                                            }
+                                            const currentKey = res.data.key;
+                                            const embed = new EmbedBuilder()
+                                                .setTitle(langRes.apple_pay.updated)
+                                                .setDescription(langRes.apple_pay.updated_description.replace('{0}', url).replace('{1}', country).replace('{2}', `https://hastebin.com/raw/${previousKey}`).replace('{3}', `https://hastebin.com/${currentKey}`).replace('{4}', networks.map(it => {
+                                                    return `\n- **${it}**`;
+                                                })))
+                                                .setTimestamp()
+                                                .setColor(brightColor());
+                                            channel.send({embeds: [embed]});
                                         }
                                     }
-                                } else {
-                                    // First timer
-                                    const embed = new EmbedBuilder()
-                                        .setTitle(langRes.apple_pay.arrived)
-                                        .setDescription(langRes.apple_pay.arrived_description.replace('{0}', 'wolfmeister.dev').replace('{1}', country).replace('{2}', data.supportedNetworks.map(it => `\n- **${it}**`)))
-                                        .setTimestamp()
-                                    channel.send({embeds: [embed]});
-                                    await client.query('INSERT INTO watchers_cache (guild_id, last) VALUES ($1, $2)', [guild_id, encodedData]);
                                 }
                             }
                         }
                     }
+
+                    // Update last data
+                    await prepared('INSERT INTO watchers_cache (id, last) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET last = $2', [guildId + '-' + url, encodedData]);
                 }
             }
-
-            // Update cache
-            await client.query('UPDATE cached_sites SET encoded = $1 WHERE url = $2', [encoded, url]);
-        }catch (e) {
-            console.error(e);
         }
     }
+};
 
-    await client.end();
+const check = async () => {
+    console.log('Checking for ApplePay updates...');
+
+    await checkFile('config.json');
+    await checkFile('config-alt.json');
 };
 
 check().then(() => setInterval(check, 1000 * 60 * 5)); // Run interval every 5 minutes after first check

@@ -11,7 +11,7 @@ global.langDir = rootDir + 'lang/';
     await execute('CREATE TABLE IF NOT EXISTS update_channel (guild_id text PRIMARY KEY, channel_id text NOT NULL UNIQUE);');
     await execute('CREATE TABLE IF NOT EXISTS software_updates (audience text PRIMARY KEY, encoded text NOT NULL);');
     await execute('CREATE TABLE IF NOT EXISTS cached_sites (url text PRIMARY KEY, encoded text NOT NULL);');
-    await execute('CREATE TABLE IF NOT EXISTS watchers_cache (guild_id text PRIMARY KEY, last text NOT NULL);');
+    await execute('CREATE TABLE IF NOT EXISTS watchers_cache (id text PRIMARY KEY, last text NOT NULL);');
     const res = await prepared('SELECT $1::text as message;', ['Connected to DataBase!']);
     console.log(res.rows[0].message);
 })();
