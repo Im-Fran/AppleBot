@@ -1,7 +1,6 @@
 const dotenv = require('dotenv')
 const fs = require('fs');
-const vars = ['BOT_TOKEN', 'CLIENT_ID', 'DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD']
-
+const vars = ['BOT_TOKEN', 'CLIENT_ID']
 
 // Check if we have a .env file
 if (fs.existsSync('.env')) {
@@ -18,5 +17,14 @@ if (fs.existsSync('.env')) {
         }
     });
 
+}
+
+if(!process.env.DATABASE_URL) {
+    ['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'].forEach(variable => {
+        if(!process.env[variable]) {
+            console.log(`Variable "${variable}" not found! Please make sure to add it.`);
+            process.exit(1);
+        }
+    });
     process.env.DB_PORT = process.env.DB_PORT || 5432;
 }

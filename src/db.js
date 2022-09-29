@@ -1,7 +1,9 @@
 const { Client } = require('pg');
 
 const getClient = async () => {
-    const client = new Client({
+    const client = process.env.DATABASE_URL ? new Client({
+        connectionString: process.env.DATABASE_URL,
+    }) : new Client({
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         user: process.env.DB_USERNAME,
