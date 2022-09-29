@@ -1,6 +1,11 @@
 const { getCommandMeta } = require("./commands");
 const { lang } = require("./i18n");
+const { prepared } = require('./db');
 
+client.on('guildCreate', async (guild) => {
+    const guildId = guild.id
+    await prepared('INSERT INTO guilds_lang (guild_id, lang_id) VALUES ($1,$2) ON CONFLICT (guild_id) DO NOTHING RETURNING guild_id, lang_id;', [guildId, 'en'])
+});
 
 client.on('interactionCreate', async interaction => {
     const langRes = await lang(interaction.guildId);

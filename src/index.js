@@ -3,7 +3,7 @@ require('./bootstrap');
 
 const { prepared } = require('./db'); // Prepared statement
 const DiscordRest = require('@discordjs/rest'); // Discord REST API
-const { Client, GatewayIntentBits } = require('discord.js'); // Discord.js
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js'); // Discord.js
 
 const { initUpdateChecker } = require('./apple/apple');
 const { initCommands } = require('./commands'); // Get command methods
@@ -34,4 +34,12 @@ client.on('ready', () => {
     initUpdateChecker(); // Start the apple update checker
     require('./tools/apple-config') // Load the apple pay checker
     initCommands(rest); // Load the commands
+
+    setInterval(async () => {
+        const servers = await prepared('SELECT COUNT(guild_id) as amount FROM guilds_lang;');
+        if(servers.rows[0]) {
+            const amount = servers.rows[0].amount;
+            client.user.setPresence({ activities: [{ name: `${amount} servers!`, type: ActivityType.Watching }], status: 'online' });
+        }
+    }, 1000 * 15);
 });
