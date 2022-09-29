@@ -7,7 +7,6 @@ client.on('interactionCreate', async interaction => {
     try {
         const start = Date.now();
         if(interaction.isChatInputCommand()){
-            await interaction.deferReply();
             const meta = getCommandMeta(interaction.commandName);
             if (typeof meta.onExecute === 'function') {
                 await meta.onExecute(interaction);

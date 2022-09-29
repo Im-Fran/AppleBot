@@ -25,6 +25,7 @@ const data = new SlashCommandBuilder()
     )
 
 data.onExecute = async (interaction) => {
+    await interaction.deferReply();
     const guildId = interaction.guildId;
     const langRes = await lang(guildId);
     try {

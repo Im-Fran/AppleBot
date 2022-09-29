@@ -16,6 +16,7 @@ const data = new SlashCommandBuilder()
     )
 
 data.onExecute = async (interaction) => {
+    await interaction.deferReply({ ephemeral: true });
     const langId = interaction.options.getString('language');
     const guildId = interaction.guildId;
     if (!fs.existsSync(langDir + langId + '.json')) {
@@ -25,13 +26,22 @@ data.onExecute = async (interaction) => {
         });
     }
 
-    const newLang = await setLang(guildId, langId)
-    const langRes = await lang(guildId);
+    if(interaction.memberPermissions.has('ADMINISTRATOR')) {
+        const newLang = await setLang(guildId, langId)
+        const langRes = await lang(guildId);
 
-    await interaction.editReply({
-        content: langRes.global.lang_set.replace('{0}', newLang),
-        ephemeral: true,
-    });
+        await interaction.editReply({
+            content: langRes.global.lang_set.replace('{0}', newLang),
+            ephemeral: true,
+        });
+    } else {
+        const langRes = await lang(guildId);
+
+        await interaction.editReply({
+            content: langRes.global.no_perms,
+            ephemeral: true,
+        });
+    }
 };
 
 module.exports = data;
