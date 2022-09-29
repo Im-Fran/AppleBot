@@ -47,7 +47,7 @@ const checkFile = async (file) => {
      */
 };
 
-const check = async () => {
+const check = async (previousRequest) => {
 
     const client = await getClient();
     console.log('Checking for ApplePay updates...');
@@ -55,10 +55,22 @@ const check = async () => {
     console.log('Checking with wolfmeister')
     let url = 'https://www.wolfmeister.dev/api/v1/wallets/apple/payments'
     let res = await get(url, {
-        httpsAgent
+        httpsAgent,
+        headers: {
+            'set-cookie': previousRequest ? previousRequest.headers['set-cookie'] : undefined,
+        },
     }).catch(err => {
         console.error(err);
     })
+
+    // Check if it's from cloudflare
+    if (res.data && res.data.includes('Cloudflare') && res.data.includes('Ray ID') && res.data.includes('5 seconds')) {
+        console.log('Cloudflare detected, retrying in 5 seconds...')
+        setTimeout(() => {
+            check(res);
+        }, 7000);
+        return;
+    }
 
     if(res && res.data){
         try {
@@ -119,7 +131,7 @@ const check = async () => {
                                         .setDescription(langRes.apple_pay.arrived_description.replace('{0}', 'wolfmeister.dev').replace('{1}', country).replace('{2}', data.supportedNetworks.map(it => `\n- **${it}**`)))
                                         .setTimestamp()
                                     channel.send({embeds: [embed]});
-                                    await client.query('INSERT INTO watchers_cache (guild_id, is_first, last) VALUES ($1, $2, $3)', [guild_id, false, encodedData]);
+                                    await client.query('INSERT INTO watchers_cache (guild_id, last) VALUES ($1, $2)', [guild_id, encodedData]);
                                 }
                             }
                         }
